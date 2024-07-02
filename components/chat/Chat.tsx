@@ -3,19 +3,30 @@
 import { useChat } from 'ai/react';
 import TextPanel from "@/components/chat/TextPanel"
 import { Prompt } from "@/components/ui/prompt"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { models } from "@/data/models"
 import { useAppContext } from '@/components/context/States'
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 function Chat() {
   const router = useRouter();
   const [model1, setModel1] = useState(models[0].value);
+  const [isMobile, setIsMobile] = useState(false);
   const [model2, setModel2] = useState(models[1].value);
   const [provider1, setProvider1] = useState(models[0].provider);
   const [provider2, setProvider2] = useState(models[1].provider);
   const { language, setResetChatFunction } = useAppContext();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); 
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const resetChat = () => {
     chat1.setMessages([]);
@@ -53,6 +64,16 @@ function Chat() {
       setProvider2(selectedModel.provider);
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-center text-lg font-medium">
+          Please view on a bigger screen
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div id="right-main" className='flex flex-col w-full h-full items-center p-3 gap-3'>

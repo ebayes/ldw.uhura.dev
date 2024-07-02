@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { usePathname, useRouter } from 'next/navigation'
 import { Languages, Plus } from 'lucide-react'
-import { ChooseModel } from "@/components/chat/ChooseModel"
+import { ChooseModel } from "@/components/chat/ChooseLanguage"
 import { languages } from "@/data/models"
 import { useAppContext } from '@/components/context/States'
 import {
@@ -15,11 +15,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { LanguageInput } from "@/components/chat/LanguageInput"
+import { useState } from 'react';
+
+interface LanguageOption {
+  value: string;
+  label: string;
+}
 
 function TopBar() {
   const pathname = usePathname();
   const { language, setLanguage, resetChat } = useAppContext();
+  const [customLanguages, setCustomLanguages] = useState<LanguageOption[]>([]);
   const router = useRouter();
+  
 
   const capitalizeSlug = (slug: string) => {
     return slug.charAt(1).toUpperCase() + slug.slice(2);
@@ -40,6 +49,12 @@ function TopBar() {
       return "Create images";
     }
     return ""; // Default empty string for other pathnames
+  };
+
+  const handleCustomLanguageAdd = (newLanguage: string) => {
+    const newCustomLanguage: LanguageOption = { value: newLanguage, label: newLanguage };
+    setCustomLanguages([...customLanguages, newCustomLanguage]);
+    setLanguage(newLanguage);
   };
 
   return (
@@ -64,15 +79,23 @@ function TopBar() {
           </Breadcrumb>
         </div>
         <div className='flex items-center gap-2'>
-          {pathname === '/chat' && (
-            <>
-              <ChooseModel 
-                models={languages} 
-                onModelChange={(newLanguage) => setLanguage(newLanguage)} 
-                value={language}
-                icon={false}
+      {pathname === '/chat' && (
+        <>
+          <ChooseModel 
+            models={[...languages, ...customLanguages]} 
+            onModelChange={(newLanguage) => setLanguage(newLanguage)} 
+            value={language}
+            icon={false}
+            width="150px"
+            onCustomOptionAdd={handleCustomLanguageAdd}
+          />
+              {/* 
+              <LanguageInput 
+                onLanguageChange={setLanguage} 
+                initialValue={language}
                 width="150px"
               />
+              */}
               <Button variant="outline" onClick={handleNewChat} className='font-mono text-xs'>
                 <div className='flex items-center'>
                   <Plus className='w-3 h-3 mr-2' />

@@ -2,8 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['bit.ly'],
-    domains: ['pbs.twimg.com'],
+    domains: ['bit.ly', 'pbs.twimg.com', 'xlkgzmtquriuxadizbwl.supabase.co'],
     remotePatterns: [
       {
         protocol: "https",

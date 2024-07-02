@@ -21,6 +21,7 @@ import {
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { models, languages } from "@/data/models"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Input } from "@/components/ui/input"
 
 interface ChooseModelProps {
   models?: typeof models | typeof languages;
@@ -28,6 +29,7 @@ interface ChooseModelProps {
   value?: string;
   icon?: boolean;
   width?: string;
+  onCustomOptionAdd?: (value: string) => void;
 }
 
 export function ChooseModel({ 
@@ -35,10 +37,12 @@ export function ChooseModel({
   onModelChange, 
   value: initialValue,
   icon = true,
-  width = "280px"
+  width = "280px",
+  onCustomOptionAdd
 }: ChooseModelProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(initialValue || "gpt-4-turbo")
+  const [customOption, setCustomOption] = React.useState("")
 
   const availableModels = providedModels && providedModels.length > 0 ? providedModels : models
 
@@ -83,7 +87,7 @@ export function ChooseModel({
       </PopoverTrigger>
       <PopoverContent className={`${width} p-0`}>
         <Command>
-          <CommandInput className="font-mono text-xs" placeholder="Search models..." />
+          <CommandInput className="font-mono text-xs" placeholder="Search language..." />
           <CommandList>
             <CommandEmpty>No model found.</CommandEmpty>
             <CommandGroup>
@@ -128,6 +132,30 @@ export function ChooseModel({
                 </HoverCard>
               ))}
             </CommandGroup>
+            {onCustomOptionAdd && (
+              <CommandGroup>
+                <div className="p-2">
+                  <Input
+                    value={customOption}
+                    onChange={(e) => setCustomOption(e.target.value)}
+                    placeholder="Add custom language..."
+                    className="font-mono text-xs"
+                  />
+                  <Button
+                    variant="dream"
+                    onClick={() => {
+                      if (customOption) {
+                        onCustomOptionAdd(customOption);
+                        setCustomOption("");
+                      }
+                    }}
+                    className="w-full mt-2 font-mono text-xs"
+                  >
+                    Add Custom Language
+                  </Button>
+                </div>
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

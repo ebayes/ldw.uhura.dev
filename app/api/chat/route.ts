@@ -2,10 +2,10 @@ import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { cohere } from '@ai-sdk/cohere';
 import { mistral } from '@ai-sdk/mistral';
+import { google } from '@ai-sdk/google';
 import { streamText, HuggingFaceStream, StreamingTextResponse } from 'ai';
 import { experimental_buildOpenAssistantPrompt } from 'ai/prompts';
 import { HfInference } from '@huggingface/inference';
-import { pipeline, AutoTokenizer, AutoModelForCausalLM } from '@xenova/transformers';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -47,12 +47,15 @@ export async function POST(req: Request) {
       case 'mistral':
         selectedModel = mistral(model || 'mistral-large-latest');
         break;
+      case 'google':
+        selectedModel = google(model || 'models/gemini-pro');
+        break;
       default:
         selectedModel = openai(model || 'gpt-4o');
     }
 
     const result = await streamText({
-      model: selectedModel,
+      model: selectedModel as any,
       system: systemMessage,
       messages,
     });
